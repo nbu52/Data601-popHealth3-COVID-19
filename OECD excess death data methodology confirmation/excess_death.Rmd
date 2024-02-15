@@ -1,0 +1,52 @@
+---
+title: "OECD_excess_deaths_method_confirmation"
+author: "Wuqiu 'Jason' Jiang"
+date: "15-02-2024"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(dplyr)
+
+# Read the dataset
+data <- read.csv("OECD_weekly_mortality_data.csv")
+
+# Split the data into baseline (2015-2019) and target (2020-2022)
+baseline_data <- filter(data, Year >= 2015 & Year <= 2019)
+target_data <- filter(data, Year >= 2020 & Year <= 2022)
+
+# Calculate the baseline averages
+baseline_avg <- baseline_data %>%
+  group_by(Country, Gender, Age, Week_number) %>%
+  summarise(Baseline_avg_deaths = mean(All_cause_deaths_number, na.rm = TRUE), .groups = 'drop')
+
+# Merge with target data and calculate excess deaths and percent change
+final_data <- target_data %>%
+  left_join(baseline_avg, by = c("Country", "Gender", "Age", "Week_number")) %>%
+  mutate(Calculated_excess_deaths_number = All_cause_deaths_number - Baseline_avg_deaths,
+         Calculated_excess_deaths_percent_change_from_average = (Calculated_excess_deaths_number / Baseline_avg_deaths) * 100) %>%
+  mutate(Calculated_excess_deaths_number_1_decimal_place = round(Calculated_excess_deaths_number, 1),
+         Calculated_excess_deaths_percent_change_from_average_1_decimal_place = round(Calculated_excess_deaths_percent_change_from_average, 1))
+
+# Add comparison columns
+final_data <- final_data %>%
+  mutate(Excess_Deaths_Number_Comparison = Excess_deaths_number == Calculated_excess_deaths_number_1_decimal_place,
+         Excess_Deaths_Percent_Change_Comparison = Excess_deaths_percent_change_from_average == Calculated_excess_deaths_percent_change_from_average_1_decimal_place)
+
+# Write the final data to a CSV file
+write.csv(final_data, "Final_Updated_OECD_weekly_mortality_data_standard_rounding.csv", row.names = FALSE)
+
+# Filter mismatched rows for a separate file
+mismatched_data <- filter(final_data, Excess_Deaths_Number_Comparison == FALSE | Excess_Deaths_Percent_Change_Comparison == FALSE)
+write.csv(mismatched_data, "Mismatched_OECD_weekly_mortality_data_standard_rounding.csv", row.names = FALSE)
+
+# This code is written with the help of ChatGPT.
+```
