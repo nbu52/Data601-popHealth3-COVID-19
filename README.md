@@ -16,10 +16,11 @@ Takes a little time to open.
 
 
 Supplementary files 1, 2 and 3:
-Its a Jupyther notebook file, once all the csv are download it will run along with the html files.
+Its a Jupyther notebook file, once all the csv are download, run notebook.
+There are html files for each Supplementary files 1, 2 and 3, download and open.
 
 
-Poster: 
+Poster and Investigation of countries:
 PDF file
 
 
