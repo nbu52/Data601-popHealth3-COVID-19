@@ -19,6 +19,9 @@ Supplementary files 1, 2 and 3:
 Its a Jupyther notebook file, once all the csv are download, run notebook.
 There are html files for each Supplementary files 1, 2 and 3, download and open.
 
+Data merging to make 2020 to 2022:
+This is html file , it explains how we create table for analysis from main OECD file.
+
 
 Poster and Investigation of countries:
 PDF file
